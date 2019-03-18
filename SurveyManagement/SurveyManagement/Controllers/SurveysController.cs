@@ -11,6 +11,7 @@ using SurveyManagement.DataAccess;
 using SurveyManagement.DataAccess.Entities;
 
 using SurveyManagement.BusinessLogic.Services;
+using SurveyManagement.ViewModels;
 
 namespace SurveyManagement.Controllers
 {
@@ -29,83 +30,48 @@ namespace SurveyManagement.Controllers
 
         // GET: api/Surveys
         [HttpGet]
-        public IEnumerable<SurveyDto> GetAllSurveys()
+        public IEnumerable<SurveyViewModel> GetAllSurveys()
         {
+            var surveys = _surveyService.GetAllSurveys();
 
-            var surveys = _surveyService.Surveys.ToList();
-            var surveyDtos = surveys.Select(_mapper.Map<Survey, SurveyDto>);
+            var surveyVMs = new List<SurveyViewModel>();
 
-            return surveyDtos;
+            foreach(var s in surveys)
+            {
+                var surveyVM = _mapper.Map<SurveyDto, SurveyViewModel>(s);
+                surveyVMs.Add(surveyVM);
+            }
+            return surveyVMs;
         }
 
         // GET: api/Surveys/5
         [HttpGet("{id}")]
         public IActionResult GetSurvey(int id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
 
-            var survey = _surveyService.Surveys.Find(id);
-
-            if (survey == null)
-            {
-                return NotFound();
-            }
+            var survey = _surveyService.GetSurvey(id);
 
             return Ok(survey);
         }
 
         // PUT: api/Surveys/5
         [HttpPut("{id}")]
-        public IActionResult UpdateSurvey(int id, SurveyDto survey)
+        public IActionResult UpdateSurvey(int id, SurveyViewModel surveyVM)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            var _survey = _mapper.Map<SurveyViewModel, SurveyDto>(surveyVM);
 
-            if (id != survey.Id)
-            {
-                return BadRequest();
-            }
-
-            var _survey = _mapper.Map<SurveyDto, Survey>(survey);
-            _surveyService.Entry(_survey).State = EntityState.Modified;
-
-            try
-            {
-                _surveyService.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!SurveyExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+            _surveyService.UpdateSurvey(surveyVM.Id, _survey);
+            
             return NoContent();
         }
 
         // POST: api/Surveys
         [HttpPost]
-        public IActionResult CreateSurvey(SurveyDto survey)
+        public IActionResult CreateSurvey(SurveyViewModel surveyVM)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
 
-            var _survey = _mapper.Map<SurveyDto, Survey>(survey);
-
-            _surveyService.Surveys.Add(_survey);
-            _surveyService.SaveChanges();
+            var _survey = _mapper.Map<SurveyViewModel, SurveyDto>(surveyVM);
+            _surveyService.CreateSurvey(_survey);
 
             return CreatedAtAction("GetSurvey", new { id = _survey.Id }, _survey);
         }
@@ -114,26 +80,17 @@ namespace SurveyManagement.Controllers
         [HttpDelete("{id}")]
         public IActionResult DeleteSurvey(int id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
 
-            var survey = _surveyService.Surveys.Find(id);
+            var survey = _surveyService.GetSurvey(id);
             if (survey == null)
             {
                 return NotFound();
             }
 
-            _surveyService.Surveys.Remove(survey);
-            _surveyService.SaveChanges();
+            _surveyService.DeleteSurvey(survey.Id);
 
             return Ok(survey);
         }
 
-        private bool SurveyExists(int id)
-        {
-            return _surveyService.Surveys.Any(e => e.Id == id);
-        }
     }
 }

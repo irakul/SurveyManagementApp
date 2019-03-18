@@ -7,42 +7,73 @@ using SurveyManagement.DataAccess.Entities;
 
 namespace SurveyManagement.BusinessLogic.Services
 {
-    public class SurveyService : ISurveyService
+    public class QuestionService : IQuestionService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public SurveyService(IUnitOfWork unitOfWork, IMapper mapper)
+        public QuestionService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
-        public void CreateSurvey(SurveyDto survey)
+        public void CreateQuestion(QuestionDto question)
         {
-            var _survey = _mapper.Map<SurveyDto, Survey>(survey);
+            var _question = _mapper.Map<QuestionDto, Question>(question);
 
-            _unitOfWork.Surveys.Add(_survey);
+            _unitOfWork.Questions.Add(_question);
+            _unitOfWork.Save();
         }
 
-        public void DeleteSurvey(int id)
+        public void DeleteQuestion(int id)
         {
-            //
+            var _question = _unitOfWork.Questions.Get(id);
+            if (_question != null)
+            {
+                _unitOfWork.Questions.Remove(_question);
+            }
+            
         }
 
-        public IEnumerable<SurveyDto> GetAllSurveys()
+        public IEnumerable<QuestionDto> GetAllQuestions()
         {
-            throw new NotImplementedException();
+            var questions = _unitOfWork.Questions.GetAll();
+            var questionDtos = new List<QuestionDto>();
+
+            foreach (var q in questions)
+            {
+                var questionDto = _mapper.Map<Question, QuestionDto>(q);
+                questionDtos.Add(questionDto);
+            }
+
+            return questionDtos;
         }
 
-        public SurveyDto GetSurvey(int id)
+        public QuestionDto GetQuestion(int id)
         {
-            throw new NotImplementedException();
+            var Question = _unitOfWork.Questions.Get(id);
+            var QuestionDto = _mapper.Map<Question, QuestionDto>(Question);
+
+            return QuestionDto;
         }
 
-        public void UpdateSurvey(int id, SurveyDto survey)
+        public void UpdateQuestion(int id, QuestionDto questionDto)
         {
-            throw new NotImplementedException();
+            var questionUpdated = _mapper.Map<QuestionDto, Question>(questionDto);
+            var questionInUnitOfWork = _unitOfWork.Questions.Get(id);
+
+            if (id == questionDto.Id)
+            {
+                questionInUnitOfWork.Text = questionUpdated.Text;
+                questionInUnitOfWork.Comment = questionUpdated.Comment;
+                questionInUnitOfWork.SurveyId = questionUpdated.SurveyId;
+                questionInUnitOfWork.AnswerVariants = questionUpdated.AnswerVariants;
+                _unitOfWork.Save();
+            }
+
+            
+
         }
     }
 }

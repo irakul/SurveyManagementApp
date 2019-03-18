@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using SurveyManagement.DataAccess.Entities;
+using SurveyManagement.ViewModels;
 
 namespace SurveyManagement
 {
@@ -11,11 +12,18 @@ namespace SurveyManagement
     {
         public MappingProfile()
         {
-            CreateMap<Survey, SurveyDto>();
             CreateMap<Question, QuestionDto>();
-
-            CreateMap<Survey, SurveyDto>().ReverseMap();
             CreateMap<Question, QuestionDto>().ReverseMap();
+
+            CreateMap<Survey, SurveyDto>();
+            CreateMap<Survey, SurveyDto>().ReverseMap();
+
+            CreateMap<SurveyDto, SurveyViewModel>();
+            CreateMap<SurveyDto, SurveyViewModel>().ReverseMap();
+
+            CreateMap<QuestionDto, QuestionViewModel>();
+            CreateMap<QuestionDto, QuestionViewModel>().ReverseMap();
+
 
             CreateMap<Survey, SurveyDto>().BeforeMap((x,y) =>
             {
@@ -25,6 +33,8 @@ namespace SurveyManagement
                 y.Creator = x.Creator;
             });
             
+
+
         }
     }
 }
