@@ -31,15 +31,10 @@ namespace SurveyManagement.Controllers
         [HttpGet]
         public IEnumerable<QuestionViewModel> GetAllQuestions()
         {
+            IEnumerable<QuestionViewModel> questionVMs;
             var questions = _questionService.GetAllQuestions();
 
-            var questionVMs = new List<QuestionViewModel>();
-
-            foreach (var s in questions)
-            {
-                var questionVM = _mapper.Map<QuestionDto, QuestionViewModel>(s);
-                questionVMs.Add(questionVM);
-            }
+            questionVMs = _mapper.Map<IEnumerable<QuestionDto>, IEnumerable<QuestionViewModel>>(questions);
             return questionVMs;
         }
 

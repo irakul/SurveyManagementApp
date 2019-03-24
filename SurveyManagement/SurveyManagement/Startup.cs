@@ -45,6 +45,7 @@ namespace SurveyManagement
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddTransient<ISurveyRepository, SurveyRepository>();
             services.AddTransient<IQuestionRepository, QuestionRepository>();
+            services.AddTransient<IAnswerRepository, AnswerVariantRepository>();
             services.AddTransient<ISurveyService, SurveyService>();
             services.AddTransient<IQuestionService, QuestionService>();
             

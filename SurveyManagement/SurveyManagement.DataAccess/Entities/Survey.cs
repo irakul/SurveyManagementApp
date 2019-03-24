@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace SurveyManagement.DataAccess.Entities
 {
-    public class Survey
+    public class Survey : BaseEntity
     {
-        [Key]
-        public int Id { get; set; }
         public string Name { get; set; }
         public DateTime CreatedOn { get; set; }
         public string Creator { get; set; }

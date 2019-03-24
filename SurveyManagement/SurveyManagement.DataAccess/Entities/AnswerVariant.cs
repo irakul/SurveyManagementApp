@@ -7,10 +7,8 @@ using System.Threading.Tasks;
 
 namespace SurveyManagement.DataAccess.Entities
 {
-    public class AnswerVariant
+    public class AnswerVariant : BaseEntity
     {
-        [Key]
-        public int Id { get; set; }
         public string Text { get; set; }
                 
         public Question Question { get; set; }

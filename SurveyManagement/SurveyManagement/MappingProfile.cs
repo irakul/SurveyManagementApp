@@ -12,8 +12,22 @@ namespace SurveyManagement
     {
         public MappingProfile()
         {
-            CreateMap<Question, QuestionDto>();
-            CreateMap<Question, QuestionDto>().ReverseMap();
+            CreateMap<Question, QuestionDto>()
+                .ForMember(m => m.AnswerVariants, opt => opt.Ignore())
+                .AfterMap((m, q) => {
+                    q.AnswerVariants = m.AnswerVariants.Select(c => new string(c.Text)).ToList();
+                    
+                    });
+
+
+            CreateMap<QuestionDto, Question>()
+                .ForMember(m => m.AnswerVariants, opt => opt.Ignore())
+                .AfterMap(
+                    (m, q) => {
+                                    q.AnswerVariants = m.AnswerVariants
+                                        .Select(c => new AnswerVariant() { Text = c, QuestionId = m.Id })
+                                        .ToList();
+                });
 
             CreateMap<Survey, SurveyDto>();
             CreateMap<Survey, SurveyDto>().ReverseMap();

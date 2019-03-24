@@ -8,6 +8,7 @@ namespace SurveyManagement.DataAccess
     {
         IQuestionRepository Questions { get; }
         ISurveyRepository Surveys { get; }
+        IAnswerRepository AnswerVariants { get; }
         int Save();
 
     }
